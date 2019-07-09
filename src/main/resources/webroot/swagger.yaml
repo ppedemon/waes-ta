@@ -1,0 +1,494 @@
+openapi: 3.0.2
+swagger: 2.0
+
+info:
+  title: 'Chirper: A simple Twitter-like API'
+  description: API allowing users to post so-called chirps, which can be liked, replied, or "rechirped".
+  version: 1.0.0
+  contact:
+    email: ppedemonte@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: /api/v1
+
+tags:
+- name: Chirps
+  description: Handle a chirp collection
+
+paths:
+  /chirps:
+    # Create a chirp
+    post:
+      tags:
+      - Chirps
+      security:
+      - bearerAuth: []
+      summary: Post a chirp
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - text
+              properties:
+                text:
+                  type: string
+                  description: Text of chirp to be posted, can't be blank or exceed 256 characters.
+                inReplyTo:
+                  type: string
+                  description: >
+                    Chirp `id`, makes the posted chirp a reply to the chirp with the given `id`.
+                    Mutually exclusive with rechirpOf.
+                rechirpOf:
+                  type: string
+                  description: >
+                    Chirp `id`, makes the posted chirp a rechirp of the chirp with the given `id`.
+                    Mutually exclusive with `inReplyTo`.
+      responses:
+        201:
+          description: Chirp successfully created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of posted chirp
+          links:
+            chirpLocation:
+              description: The returned `id` can be used in `GET /chirps/{id}` to get the chirp
+              operationId: getChirp
+              parameters:
+                id: '$response.body#/_id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chirp'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+      - Chirps
+      security:
+      - bearerAuth: []
+      summary: Paginate through all chirps authored by the authenticated user
+      operationId: getAllChirps
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Maximum number of chirps to retrieve
+        - in: query
+          name: next
+          schema:
+            type: string
+            required: false
+            description: Token used to get next page of results
+      responses:
+        200:
+          description: Chirps found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+          links:
+            nextChirps:
+              description: The `next` token can be passed to this request to get next page
+              operationId: getAllChirps
+              parameters:
+                next: '$response.body#/next'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chirps/{id}:
+    get:
+      tags:
+      - Chirps
+      security:
+      - bearerAuth: []
+      summary: Get a chirp by id
+      operationId: getChirp
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/ChirpId'
+          description: Chirp id
+      responses:
+        200:
+          description: Chirp found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chirp'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Chirp not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+      - Chirps
+      security:
+      - bearerAuth: []
+      summary: Delete the chirp with the given `id`, only if the current user has authored it.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/ChirpId'
+          description: Chirp id
+      responses:
+        204:
+          description: Chirp deleted
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Chirp not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chirps/{id}/replies:
+    get:
+      tags:
+      - Chirps
+      security:
+      - bearerAuth: []
+      summary: Paginate through all replies to a given Chirp
+      operationId: getAllReplies
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/ChirpId'
+          description: Chirp id
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Maximum number of replies to retrieve
+        - in: query
+          name: next
+          schema:
+            type: string
+            required: false
+            description: Token used to get next page of results
+      responses:
+        200:
+          description: Replies found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+          links:
+            nextChirps:
+              description: The `next` token can be passed to this request to get next page
+              operationId: getAllReplies
+              parameters:
+                next: '$response.body#/next'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chirps/{id}/rechirps:
+    get:
+      tags:
+      - Chirps
+      security:
+      - bearerAuth: []
+      summary: Paginate through all rechirps of a given Chirp
+      operationId: getAllRechirps
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/ChirpId'
+          description: Chirp id
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Maximum number of rechirps to retrieve
+        - in: query
+          name: next
+          schema:
+            type: string
+            required: false
+            description: Token used to get next page of results
+      responses:
+        200:
+          description: Rechirps found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+          links:
+            nextChirps:
+              description: The `next` token can be passed to this request to get next page
+              operationId: getAllRechirps
+              parameters:
+                next: '$response.body#/next'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chirps/{id}/likes:
+    post:
+      tags:
+      - Chirps
+      security:
+      - bearerAuth: []
+      summary: Like the given chirp.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/ChirpId'
+          description: Chirp id
+      responses:
+        204:
+          description: Chirp liked
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Chirp not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /chirps/{id}/stats:
+    get:
+      tags:
+      - Chirps
+      security:
+      - bearerAuth: []
+      summary: Get stats likes, replies, and rechirps count for the given chirp.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/ChirpId'
+          description: Chirp id
+      responses:
+        200:
+          description: Stats for given chirp
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Chirp not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Chirp:
+      type: object
+      required:
+      - id
+      - userId
+      - createdAt
+      - text
+      - likes
+      properties:
+        id:
+          $ref: '#/components/schemas/ChirpId'
+          description: Chirp id
+        userId:
+          type: string
+          pattern: '^[0-9a-f\\-]{36}$'
+          description: User id
+        createdAt:
+          type: string
+          format: date-time
+          description: creation date
+        text:
+          type: string
+          pattern: '^(?=.*\\S).{1,256}$'
+          description: Chirp text
+        relation:
+          type: object
+          required:
+          - parentId
+          - kind
+          properties:
+            parentId:
+              $ref: '#/components/schemas/ChirpId'
+              description: Id of parent chirp
+            kind:
+              type: string
+              enum:
+              - 'reply'
+              - 'rechirp'
+          description: Optional relation specifying whether this chirp is a reply or rechirp
+        likes:
+          type: integer
+          minimumValue: 0
+          description: Number of likes for this chirp
+    ChirpId:
+      type: string
+      pattern: '^[0-9a-f]{24}$'
+    Page:
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Chirp'
+          description: At most `limit` chirps
+        next:
+          type: string
+          description: Optional token to be used to get next page. If not present, there are no more chirps to retrieve.
+    Stats:
+      type: object
+      required:
+      - id
+      - likes
+      - replies
+      - rechirps
+      properties:
+        id:
+          $ref: '#/components/schemas/ChirpId'
+          description: Chirp id
+        likes:
+          type: integer
+          minimumValue: 0
+          description: Number of likes for the given chirp
+        replies:
+          type: integer
+          minimumValue: 0
+          description: Number of times the given chirp was replied
+        rechirps:
+          type: integer
+          minimumValue: 0
+          description: Number of times the given chirp was rechirped
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          description: error message

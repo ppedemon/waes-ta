@@ -1,0 +1,13 @@
+{
+  "auth": {
+    "pubkey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5xa8vwa3nd3nK75x1ElE8aLlY3Pc9XEOWMIruZbcH7DYBftP+gf87hNUy8aY9BjY2vEWHtAKkkWcT61qCZPHvLx0uNzhadIOHXHZ+SJzabqSko17iO8y9+OGWRZ5ZlqE8OgMxyS1eCOCc0iNmHZzD4O7ISVQ1XENoh2Pbmq8Mm+Di1XE5RYMlY7bhujWrpCk7ofYVktofpMLTxnR5QOl0FvZqz3XMqHiPOcm2yS7qtfgyAnzxhdfCMbWzY2x16g96hjBnSU3XOWqqB8ueDMqQZrgzr8x9qNcPUTr9hLFU/7ttx8ofSnsDvC00zkPphU6VG2b/efKeN13omrMVClRVQIDAQAB"
+  },
+  "mongo": {
+    "username": "admin",
+    "password": "password",
+    "authSource": "admin",
+    "db_name": "cmpdb"
+  },
+  "max_payload": "7M",
+  "guice_binder": "ar.ppedemon.wta.Binder"
+}
