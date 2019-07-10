@@ -8,6 +8,6 @@ COPY build/libs/waes-ta-${semver}-all.jar /opt/waes-ta-all.jar
 
 EXPOSE 8000-9000
 
-ENTRYPOINT java -jar /opt/wta-ta-all.jar \
+ENTRYPOINT java -jar /opt/waes-ta-all.jar \
   -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory \
   -conf ${CONFIG}
