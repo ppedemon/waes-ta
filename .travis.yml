@@ -19,6 +19,6 @@ after_success:
 
 deploy:
   - provider: script
-    script: bash docker/dockerize.sh -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+    script: bash docker/dockerize.sh -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
     on:
       branch: master
