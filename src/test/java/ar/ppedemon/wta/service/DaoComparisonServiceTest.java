@@ -9,14 +9,12 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.reactivex.core.Vertx;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.Extensions;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +39,7 @@ class DaoComparisonServiceTest {
     private DaoComparisonService comparisonService;
 
     @BeforeEach
-    private void init(Vertx vertx) {
+    void init(Vertx vertx) {
         this.base64Encoder = new Base64Encoder();
         this.comparisonDao = mock(ComparisonDao.class);
         this.comparator = mock(Comparator.class);
@@ -70,6 +68,20 @@ class DaoComparisonServiceTest {
         ComparisonDao.Side side = captor.getValue();
 
         assertThat(side, equalTo(ComparisonDao.Side.RIGHT));
+    }
+
+    @Test
+    @DisplayName("must correctly invoke dao when looking for comparison")
+    void get_always_mustInvokeDaoCorrectly() {
+        comparisonService.get(USER_ID, CMP_ID);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(comparisonDao).get(captor.capture(), captor.capture());
+        List<String> values = captor.getAllValues();
+
+        assertThat(values.size(), equalTo(2));
+        assertThat(values.get(0), equalTo(USER_ID));
+        assertThat(values.get(1), equalTo(CMP_ID));
     }
 
     @Test

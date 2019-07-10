@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 
 @ExtendWith(VertxExtension.class)
@@ -127,6 +129,17 @@ class ComparisonIntegrationTest {
     }
 
     @Test
+    @DisplayName("upserts must increment comparison version")
+    void upsert_always_mustIncrementComparisonVersion(VertxTestContext context) {
+        insertSide("1", "right", "Hi there");
+        get("1").then().assertThat().body("version", equalTo(1));
+        insertSide("1", "left", "Hi there");
+        get("1").then().assertThat().body("version", equalTo(2));
+
+        context.completeNow();
+    }
+
+    @Test
     @DisplayName("must compute result for valid comparison")
     void compare_whenValidComparison_mustReturnResult(VertxTestContext context) {
         String left = readResource("payloads/left-payload.txt");
@@ -172,8 +185,8 @@ class ComparisonIntegrationTest {
     }
 
     @Test
-    @DisplayName("comparison results must be reset when comparison change")
-    void compare_whenChangingComparison_mustBeReset(VertxTestContext context) {
+    @DisplayName("comparison results must be different when comparison change")
+    void compare_whenChangingComparison_mustGiveDifferentResults(VertxTestContext context) {
         String left = readResource("payloads/left-payload.txt");
         String right = readResource("payloads/right-payload.txt");
 
@@ -195,6 +208,20 @@ class ComparisonIntegrationTest {
                 .statusCode(200)
                 .body("status", equalTo(ComparisonResult.Status.DIFFERENT_LENGTH.toString()))
                 .body("differences", hasSize(0));
+
+        context.completeNow();
+    }
+
+    @Test
+    @DisplayName("comparison results must be reset when comparison change")
+    void compare_whenChangingComparison_mustResetResult(VertxTestContext context) {
+        insertSide("1", "left", "left hand side");
+        insertSide("1", "right", "right hand side");
+        compare("1");
+        get("1").then().assertThat().body("$", hasKey("result"));
+
+        insertSide("1", "right", "rhs");
+        get("1").then().assertThat().body("$", not(hasKey("result")));
 
         context.completeNow();
     }
@@ -241,6 +268,19 @@ class ComparisonIntegrationTest {
     }
 
     @Test
+    @DisplayName("must return status of existing comparison")
+    void getStatus_whenExistingComparison_mustReturnStatus(VertxTestContext context) {
+        insertSide("1", "left", "Left side");
+
+        get("1").then().log().ifValidationFails().and().assertThat()
+                .statusCode(200)
+                .body("version", equalTo(1))
+                .body("lhsReady", equalTo(true), "rhsReady", equalTo(false));
+
+        context.completeNow();
+    }
+
+    @Test
     @DisplayName("deleting existing comparison must remove it")
     void delete_existingComparison_mustRemove(VertxTestContext context) {
         insertSide("1", "right", "");
@@ -275,6 +315,13 @@ class ComparisonIntegrationTest {
         return given()
                 .headers("Authorization", jwtUtil.token(USER_ID))
                 .get(String.format("/diff/%s", id))
+                .thenReturn();
+    }
+
+    private Response get(String id) {
+        return given()
+                .headers("Authorization", jwtUtil.token(USER_ID))
+                .get(String.format("/diff/%s/status", id))
                 .thenReturn();
     }
 

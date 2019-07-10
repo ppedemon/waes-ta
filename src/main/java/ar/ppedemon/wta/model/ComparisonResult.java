@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 /**
- * Class modeling the result of a comparison. Possible configurations are:
+ * Class modeling the result of a comparison. Possible results are:
  *
  *   - Equal objects
  *   - Objects with different length

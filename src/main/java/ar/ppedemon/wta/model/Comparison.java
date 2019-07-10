@@ -30,7 +30,7 @@ public class Comparison {
     private final String userId;
     private String left;
     private String right;
-    private int version;
+    private long version;
     private ComparisonResult result;
 
     @JsonCreator
@@ -65,11 +65,11 @@ public class Comparison {
         return this;
     }
 
-    public int getVersion() {
+    public long getVersion() {
         return version;
     }
 
-    public Comparison setVersion(int version) {
+    public Comparison setVersion(long version) {
         this.version = version;
         return this;
     }

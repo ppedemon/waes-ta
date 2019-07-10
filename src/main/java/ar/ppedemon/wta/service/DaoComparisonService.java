@@ -37,6 +37,11 @@ public class DaoComparisonService implements ComparisonService {
     }
 
     @Override
+    public Maybe<Comparison> get(String userId, String cmpId) {
+        return comparisonDao.get(userId, cmpId);
+    }
+
+    @Override
     public Maybe<ResultWrapper<ComparisonResult>> compare(String userId, String cmpId) {
 
         /*

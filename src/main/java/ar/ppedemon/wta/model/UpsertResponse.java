@@ -5,33 +5,33 @@ package ar.ppedemon.wta.model;
  *
  * @author ppedemon
  */
-public class SideResponse {
+public class UpsertResponse {
 
     /**
      * Build left hand side response.
      * @param userId user Id
      * @param id     comparison Id
-     * @return       {@link SideResponse} instance
+     * @return       {@link UpsertResponse} instance
      */
-    public final static SideResponse lhsResponse(String userId, String id) {
-        return new SideResponse(userId, id, "left");
+    public static UpsertResponse lhsResponse(String userId, String id) {
+        return new UpsertResponse(userId, id, "left");
     }
 
     /**
      * Build right hand side response.
      * @param userId user Id
      * @param id     comparison Id
-     * @return       {@link SideResponse} instance
+     * @return       {@link UpsertResponse} instance
      */
-    public final static SideResponse rhsResponse(String userId, String id) {
-        return new SideResponse(userId, id, "right");
+    public final static UpsertResponse rhsResponse(String userId, String id) {
+        return new UpsertResponse(userId, id, "right");
     }
 
     private final String userId;
     private final String id;
     private final String side;
 
-    private SideResponse(String userId, String id, String side) {
+    private UpsertResponse(String userId, String id, String side) {
         this.userId = userId;
         this.id = id;
         this.side = side;

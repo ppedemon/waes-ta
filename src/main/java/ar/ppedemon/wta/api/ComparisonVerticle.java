@@ -1,6 +1,7 @@
 package ar.ppedemon.wta.api;
 
-import ar.ppedemon.wta.model.SideResponse;
+import ar.ppedemon.wta.model.ComparisonStatus;
+import ar.ppedemon.wta.model.UpsertResponse;
 import ar.ppedemon.wta.service.ComparisonService;
 import io.reactivex.Single;
 import io.vertx.core.Future;
@@ -80,6 +81,9 @@ public class ComparisonVerticle extends RestApiVerticle {
         router.get("/v1/diff/:id")
                 .handler(this::compare);
 
+        router.get("/v1/diff/:id/status")
+                .handler(this::status);
+
         router.delete("/v1/diff/:id")
                 .handler(this::delete);
 
@@ -103,7 +107,7 @@ public class ComparisonVerticle extends RestApiVerticle {
         String id = context.pathParam("id");
         String data = context.getBodyAsString();
 
-        upsertSide(context, comparisonService.upsertLeft(userId, id, data), SideResponse.lhsResponse(userId, id));
+        upsertSide(context, comparisonService.upsertLeft(userId, id, data), UpsertResponse.lhsResponse(userId, id));
     }
 
     /**
@@ -115,7 +119,7 @@ public class ComparisonVerticle extends RestApiVerticle {
         String id = context.pathParam("id");
         String data = context.getBodyAsString();
 
-        upsertSide(context, comparisonService.upsertRight(userId, id, data), SideResponse.rhsResponse(userId, id));
+        upsertSide(context, comparisonService.upsertRight(userId, id, data), UpsertResponse.rhsResponse(userId, id));
     }
 
     /**
@@ -124,7 +128,7 @@ public class ComparisonVerticle extends RestApiVerticle {
      * @param upsertOp  computation making upsert
      * @param response  HTTP response payload
      */
-    private void upsertSide(RoutingContext context, Single<Boolean> upsertOp, SideResponse response) {
+    private void upsertSide(RoutingContext context, Single<Boolean> upsertOp, UpsertResponse response) {
         upsertOp.subscribe(
                 created -> {
                     if (created) {
@@ -153,6 +157,21 @@ public class ComparisonVerticle extends RestApiVerticle {
                         badRequest(context, result.errorMessage());
                     }
                 },
+                error -> internalServerError(context, error),
+                () -> notFound(context)
+        );
+    }
+
+    /**
+     * Get status describing some comparison.
+     * @param context  {@link RoutingContext} for the HTTP interaction
+     */
+    private void status(RoutingContext context) {
+        String userId = userId(context);
+        String id = context.pathParam("id");
+
+        comparisonService.get(userId, id).subscribe(
+                comparison -> ok(context, Json.encodePrettily(ComparisonStatus.fromComparison(comparison))),
                 error -> internalServerError(context, error),
                 () -> notFound(context)
         );

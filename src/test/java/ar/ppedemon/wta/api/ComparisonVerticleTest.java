@@ -1,5 +1,6 @@
 package ar.ppedemon.wta.api;
 
+import ar.ppedemon.wta.model.Comparison;
 import ar.ppedemon.wta.model.ComparisonResult;
 import ar.ppedemon.wta.model.Span;
 import ar.ppedemon.wta.service.ComparisonService;
@@ -280,6 +281,65 @@ class ComparisonVerticleTest {
                 .headers("Authorization", jwtUtil.token(USER_ID))
         .when()
                 .get("/diff/1")
+        .then()
+                .log().ifValidationFails()
+        .and().assertThat()
+                .statusCode(500)
+                .contentType(ContentType.JSON);
+
+        context.completeNow();
+    }
+
+    @Test
+    @DisplayName("must return status of existing comparison")
+    void getStatus_whenExistingComparison_mustReturnStatus(VertxTestContext context) {
+        when(comparisonService.get(anyString(), anyString())).thenReturn(Maybe.just(
+                new Comparison(USER_ID, "1")
+                        .setLeft("1")
+                        .setVersion(2)
+                        .setResult(new ComparisonResult(ComparisonResult.Status.EQUAL, Lists.newArrayList()))));
+
+        given()
+                .headers("Authorization", jwtUtil.token(USER_ID))
+        .when()
+                .get("/diff/1/status")
+        .then()
+                .log().ifValidationFails()
+        .and().assertThat()
+                .statusCode(200)
+                .body("lhsReady", equalTo(true), "rhsReady", equalTo(false))
+                .body("result.status", equalTo(ComparisonResult.Status.EQUAL.toString()));
+
+        context.completeNow();
+    }
+
+    @Test
+    @DisplayName("must return 404 when getting status of non-existing comparison")
+    void getStatus_whenNonExistingComparison_mustReturn404(VertxTestContext context) {
+        when(comparisonService.get(anyString(), anyString())).thenReturn(Maybe.empty());
+
+        given()
+                .headers("Authorization", jwtUtil.token(USER_ID))
+        .when()
+                .get("/diff/1/status")
+        .then()
+                .log().ifValidationFails()
+        .and().assertThat()
+                .statusCode(404)
+                .contentType(ContentType.JSON);
+
+        context.completeNow();
+    }
+
+    @Test
+    @DisplayName("must handle service errors when getting status")
+    void getStatus_whenServiceError_mustReturn500(VertxTestContext context) {
+        when(comparisonService.get(anyString(), anyString())).thenThrow(new RuntimeException("Service error"));
+
+        given()
+                .headers("Authorization", jwtUtil.token(USER_ID))
+        .when()
+                .get("/diff/1/status")
         .then()
                 .log().ifValidationFails()
         .and().assertThat()
