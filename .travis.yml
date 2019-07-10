@@ -1,0 +1,21 @@
+language: java
+jdk: oraclejdk8
+
+services: docker
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+script:
+  - ./gradlew test integrationTest
+
+#deploy:
+#  - provider: script
+#    script: bash docker/dockerize.sh -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+#    on:
+#      branch: master
