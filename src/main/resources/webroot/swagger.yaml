@@ -59,7 +59,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UpsertResponse'
         400:
-          description: Bad request
+          description: Bad request (no payload or not base64)
           content:
             application/json:
               schema:
@@ -117,7 +117,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UpsertResponse'
         400:
-          description: Bad request
+          description: Bad request (no payload or not base64)
           content:
             application/json:
               schema:
@@ -156,6 +156,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ComparisonResult'
+        400:
+          description: Bad request (incomplete comparison)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         404:
           description: Comparison not found
           content:
