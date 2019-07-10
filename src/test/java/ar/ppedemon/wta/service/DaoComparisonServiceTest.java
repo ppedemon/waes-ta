@@ -1,5 +1,6 @@
 package ar.ppedemon.wta.service;
 
+import ar.ppedemon.wta.comparator.Comparator;
 import ar.ppedemon.wta.data.ComparisonDao;
 import ar.ppedemon.wta.model.Comparison;
 import ar.ppedemon.wta.model.ComparisonResult;

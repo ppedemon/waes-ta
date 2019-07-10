@@ -1,7 +1,8 @@
-package ar.ppedemon.wta.service;
+package ar.ppedemon.wta.comparator;
 
 import ar.ppedemon.wta.model.Comparison;
 import ar.ppedemon.wta.model.ComparisonResult;
+import ar.ppedemon.wta.model.Span;
 import ar.ppedemon.wta.util.Base64Encoder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -42,8 +43,7 @@ class StringComparatorTest {
         ComparisonResult r = comparator.compare(c);
 
         Assertions.assertEquals(1, r.getDifferences().size());
-        Assertions.assertEquals(r.getDifferences().get(0).getOffset(), 0);
-        Assertions.assertEquals(r.getDifferences().get(0).getLength(), 5);
+        Assertions.assertEquals(r.getDifferences().get(0), new Span(0, 5));
     }
 
     @Test
@@ -56,10 +56,8 @@ class StringComparatorTest {
         ComparisonResult r = comparator.compare(c);
 
         Assertions.assertEquals(2, r.getDifferences().size());
-        Assertions.assertEquals(r.getDifferences().get(0).getOffset(), 0);
-        Assertions.assertEquals(r.getDifferences().get(0).getLength(), 1);
-        Assertions.assertEquals(r.getDifferences().get(1).getOffset(), 2);
-        Assertions.assertEquals(r.getDifferences().get(1).getLength(), 1);
+        Assertions.assertEquals(r.getDifferences().get(0), new Span(0, 1));
+        Assertions.assertEquals(r.getDifferences().get(1), new Span(2, 1));
     }
 
     @Test
@@ -72,10 +70,8 @@ class StringComparatorTest {
         ComparisonResult r = comparator.compare(c);
 
         Assertions.assertEquals(2, r.getDifferences().size());
-        Assertions.assertEquals(r.getDifferences().get(0).getOffset(), 0);
-        Assertions.assertEquals(r.getDifferences().get(0).getLength(), 1);
-        Assertions.assertEquals(r.getDifferences().get(1).getOffset(), 3);
-        Assertions.assertEquals(r.getDifferences().get(1).getLength(), 1);
+        Assertions.assertEquals(r.getDifferences().get(0), new Span(0,1));
+        Assertions.assertEquals(r.getDifferences().get(1), new Span(3, 1));
     }
 
     @Test
@@ -88,9 +84,7 @@ class StringComparatorTest {
         ComparisonResult r = comparator.compare(c);
 
         Assertions.assertEquals(2, r.getDifferences().size());
-        Assertions.assertEquals(r.getDifferences().get(0).getOffset(), 1);
-        Assertions.assertEquals(r.getDifferences().get(0).getLength(), 2);
-        Assertions.assertEquals(r.getDifferences().get(1).getOffset(), 4);
-        Assertions.assertEquals(r.getDifferences().get(1).getLength(), 2);
+        Assertions.assertEquals(r.getDifferences().get(0), new Span(1, 2));
+        Assertions.assertEquals(r.getDifferences().get(1), new Span(4, 2));
     }
 }

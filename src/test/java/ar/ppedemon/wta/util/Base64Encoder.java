@@ -28,6 +28,15 @@ public final class Base64Encoder {
      * @return  encoded base64 string
      */
     public String encode(String s, Charset charset) {
-        return Base64.getEncoder().encodeToString(s.getBytes(charset));
+        return encode(s.getBytes(charset));
+    }
+
+    /**
+     * Encode byte array.
+     * @param bytes  bytes to encode
+     * @return   encoded base64 string
+     */
+    public String encode(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
     }
 }

@@ -28,9 +28,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -239,6 +237,42 @@ class ComparisonIntegrationTest {
     }
 
     @Test
+    @DisplayName("compare must correctly handle equal base64 binary data")
+    void compare_whenEqualBinaryData_mustReturnEqualsComparison(VertxTestContext context) {
+        byte[] left = readBinaryResource("payloads/stickroll.gif");
+        byte[] right = readBinaryResource("payloads/stickroll.gif");
+
+        insertSide("1", "left", left);
+        insertSide("1", "right", right);
+
+        compare("1").then()
+                .log().ifValidationFails()
+        .and().assertThat()
+                .statusCode(200)
+                .body("status", equalTo(ComparisonResult.Status.EQUAL.toString()));
+
+        context.completeNow();
+    }
+
+    @Test
+    @DisplayName("compare must correctly handle different base64 binary data")
+    void compare_whenDifferentBinaryData_mustReturnNotEqualsComparison(VertxTestContext context) {
+        byte[] left = readBinaryResource("payloads/stickroll.gif");
+        byte[] right = readBinaryResource("payloads/arrow.gif");
+
+        insertSide("1", "left", left);
+        insertSide("1", "right", right);
+
+        compare("1").then()
+                .log().ifValidationFails()
+                .and().assertThat()
+                .statusCode(200)
+                .body("status", equalTo(ComparisonResult.Status.DIFFERENT_LENGTH.toString()));
+
+        context.completeNow();
+    }
+
+    @Test
     @DisplayName("comparison must work with empty strings")
     void compare_whenEmptySides_mustReturnEqualComparison(VertxTestContext context) {
         insertSide("2", "right", "");
@@ -311,6 +345,15 @@ class ComparisonIntegrationTest {
                 .thenReturn();
     }
 
+    private Response insertSide(String id, String side, byte[] data) {
+        return given()
+                .headers("Authorization", jwtUtil.token(USER_ID))
+                .contentType(ContentType.TEXT)
+                .body(base64Encoder.encode(data))
+                .put(String.format("/diff/%s/%s", id, side))
+                .thenReturn();
+    }
+
     private Response compare(String id) {
         return given()
                 .headers("Authorization", jwtUtil.token(USER_ID))
@@ -335,6 +378,14 @@ class ComparisonIntegrationTest {
     private String readResource(String path) {
         try {
             return Resources.toString(Resources.getResource(path), Charsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] readBinaryResource(String path) {
+        try {
+            return Resources.toByteArray(Resources.getResource(path));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,5 +1,8 @@
 package ar.ppedemon.wta;
 
+import ar.ppedemon.wta.comparator.ByteArrayComparator;
+import ar.ppedemon.wta.comparator.Comparator;
+import ar.ppedemon.wta.comparator.StringComparator;
 import ar.ppedemon.wta.data.ComparisonDao;
 import ar.ppedemon.wta.data.MongoComparisonDao;
 import ar.ppedemon.wta.service.*;
@@ -27,7 +30,7 @@ public class Binder extends AbstractModule {
 
     @Provides
     public Comparator provideComparator() {
-        return new StringComparator(Charsets.UTF_8);
+        return new ByteArrayComparator();
     }
 
     @Provides
