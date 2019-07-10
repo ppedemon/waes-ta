@@ -14,6 +14,9 @@ cache:
 script:
   - ./gradlew test integrationTest
 
+after_success:
+  - ./gradlew jacocoTestReport coveralls
+
 #deploy:
 #  - provider: script
 #    script: bash docker/dockerize.sh -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
