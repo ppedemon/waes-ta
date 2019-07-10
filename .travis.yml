@@ -17,8 +17,8 @@ script:
 after_success:
   - ./gradlew jacocoTestReport coveralls
 
-#deploy:
-#  - provider: script
-#    script: bash docker/dockerize.sh -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-#    on:
-#      branch: master
+deploy:
+  - provider: script
+    script: bash docker/dockerize.sh -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+    on:
+      branch: master

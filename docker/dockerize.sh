@@ -33,11 +33,11 @@ if [ -z "${DOCKER_PASSWORD}" ]; then
 fi
 
 docker login -u ${DOCKER_USER} --password-stdin <<< ${DOCKER_PASSWORD}
-DIR=`dirname ${0}`
+DIR=$(dirname ${0})
 pushd ${DIR}/..
 
 ./gradlew shadowJar
-SEMVER=`cat ${DIR}/../version.txt`
+SEMVER=$(cat ${DIR}/../version.txt)
 IMG=${DOCKER_USER}/waes-ta:${SEMVER}
 docker build -t ${IMG} --build-arg semver=${SEMVER} -f docker/Dockerfile .
 docker push ${IMG}
