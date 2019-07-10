@@ -2,16 +2,15 @@ package ar.ppedemon.wta;
 
 import ar.ppedemon.wta.comparator.ByteArrayComparator;
 import ar.ppedemon.wta.comparator.Comparator;
-import ar.ppedemon.wta.comparator.StringComparator;
 import ar.ppedemon.wta.data.ComparisonDao;
 import ar.ppedemon.wta.data.MongoComparisonDao;
-import ar.ppedemon.wta.service.*;
+import ar.ppedemon.wta.service.ComparisonService;
+import ar.ppedemon.wta.service.DaoComparisonService;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import io.vertx.core.json.JsonObject;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.ext.mongo.MongoClient;
-import org.apache.commons.io.Charsets;
 
 /**
  * Dependency injection binders.
@@ -40,7 +39,7 @@ public class Binder extends AbstractModule {
     }
 
     @Provides
-    Vertx provideRxVertx(io.vertx.core.Vertx vertx) {
+    public Vertx provideRxVertx(io.vertx.core.Vertx vertx) {
         return new Vertx(vertx);
     }
 
