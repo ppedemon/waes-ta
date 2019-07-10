@@ -7,40 +7,46 @@ import ar.ppedemon.wta.util.Base64Encoder;
 import com.google.common.collect.Lists;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.reactivex.core.Vertx;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.Extensions;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(VertxExtension.class)
 @DisplayName("Dao-based comparison service")
 class DaoComparisonServiceTest {
 
     private static final String CMP_ID = "123";
     private static final String USER_ID = UUID.randomUUID().toString();
 
-    private Base64Encoder base64Encoder = new Base64Encoder();
-
-    @Mock
     private ComparisonDao comparisonDao;
-
-    @Mock
     private Comparator comparator;
 
-    @InjectMocks
+    private Base64Encoder base64Encoder;
     private DaoComparisonService comparisonService;
+
+    @BeforeEach
+    private void init(Vertx vertx) {
+        this.base64Encoder = new Base64Encoder();
+        this.comparisonDao = mock(ComparisonDao.class);
+        this.comparator = mock(Comparator.class);
+        this.comparisonService = new DaoComparisonService(comparisonDao, comparator, vertx);
+    }
 
     @Test
     @DisplayName("must correctly upsert left side of a comparison")
@@ -117,6 +123,8 @@ class DaoComparisonServiceTest {
 
         Maybe<ResultWrapper<ComparisonResult>> result = comparisonService.compare(USER_ID, CMP_ID);
         result.test()
+                //Wait for computation completion, since compare is called outside the event loop
+                .awaitDone(5, TimeUnit.SECONDS)
                 .assertValue(ResultWrapper::success)
                 .assertValue(wrapper -> wrapper.result().isEqual());
 

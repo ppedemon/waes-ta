@@ -16,8 +16,8 @@ import org.apache.commons.io.Charsets;
 public class Binder extends AbstractModule {
 
     @Provides
-    public ComparisonService provideComparisonService(ComparisonDao comparisonDao, Comparator comparator) {
-        return new DaoComparisonService(comparisonDao, comparator);
+    public ComparisonService provideComparisonService(ComparisonDao comparisonDao, Comparator comparator, Vertx vertx) {
+        return new DaoComparisonService(comparisonDao, comparator, vertx);
     }
 
     @Provides

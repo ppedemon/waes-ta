@@ -70,7 +70,7 @@ public class MongoComparisonDao implements ComparisonDao {
     @Override
     public Single<Boolean> updateResult(Comparison comparison, ComparisonResult result) {
 
-        // Query requires last seen version for comparison to update
+        // Query requires last seen version for comparison in order to update
         JsonObject query = queryFrom(
                 comparison.getUserId(),
                 comparison.getCmpId()

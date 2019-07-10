@@ -8,6 +8,5 @@
     "authSource": "admin",
     "db_name": "cmpdb"
   },
-  "max_payload": "7M",
   "guice_binder": "ar.ppedemon.wta.Binder"
 }

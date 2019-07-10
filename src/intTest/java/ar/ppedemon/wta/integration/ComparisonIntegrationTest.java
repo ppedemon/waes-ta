@@ -227,6 +227,20 @@ class ComparisonIntegrationTest {
     }
 
     @Test
+    @DisplayName("comparing incomplete comparisons must return 400")
+    void compare_whenIncompleteComparisons_mustReturn400(VertxTestContext context) {
+        insertSide("2", "right", "");
+
+        compare("2").then()
+                .log().ifValidationFails()
+        .and().assertThat()
+                .statusCode(400)
+                .contentType(ContentType.JSON);
+
+        context.completeNow();
+    }
+
+    @Test
     @DisplayName("deleting existing comparison must remove it")
     void delete_existingComparison_mustRemove(VertxTestContext context) {
         insertSide("1", "right", "");
