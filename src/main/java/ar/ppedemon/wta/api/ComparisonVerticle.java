@@ -57,7 +57,7 @@ public class ComparisonVerticle extends RestApiVerticle {
                 .errorHandler(404, this::notFound)
                 .errorHandler(500, this::internalServerError);
 
-        router.get("/swagger/*").handler(StaticHandler.create());
+        router.get("/swagger/*").handler(StaticHandler.create().setCachingEnabled(false));
 
         router.route("/v1/*")
                 .handler(JWTAuthHandler.create(jwtAuth))

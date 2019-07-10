@@ -124,7 +124,7 @@ class ComparisonVerticleTest {
                 .statusCode(201)
                 .header("Location", CoreMatchers.endsWith("/diff/1/left"))
                 .contentType(ContentType.JSON)
-                .body("userId", equalTo(USER_ID), "id", equalTo("1"), "side", equalTo("left"));
+                .body("userId", equalTo(USER_ID), "cmpId", equalTo("1"), "side", equalTo("left"));
 
         context.completeNow();
     }
@@ -140,7 +140,7 @@ class ComparisonVerticleTest {
         .and().assertThat()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("userId", equalTo(USER_ID), "id", equalTo("1"), "side", equalTo("left"));
+                .body("userId", equalTo(USER_ID), "cmpId", equalTo("1"), "side", equalTo("left"));
 
         context.completeNow();
     }
@@ -157,7 +157,7 @@ class ComparisonVerticleTest {
                 .statusCode(201)
                 .header("Location", CoreMatchers.endsWith("/diff/1/right"))
                 .contentType(ContentType.JSON)
-                .body("userId", equalTo(USER_ID), "id", equalTo("1"), "side", equalTo("right"));
+                .body("userId", equalTo(USER_ID), "cmpId", equalTo("1"), "side", equalTo("right"));
 
         context.completeNow();
     }
@@ -173,7 +173,7 @@ class ComparisonVerticleTest {
         .and().assertThat()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("userId", equalTo(USER_ID), "id", equalTo("1"), "side", equalTo("right"));
+                .body("userId", equalTo(USER_ID), "cmpId", equalTo("1"), "side", equalTo("right"));
 
         context.completeNow();
     }

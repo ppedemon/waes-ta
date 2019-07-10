@@ -20,20 +20,20 @@ public class UpsertResponse {
     /**
      * Build right hand side response.
      * @param userId user Id
-     * @param id     comparison Id
+     * @param cmpId     comparison Id
      * @return       {@link UpsertResponse} instance
      */
-    public final static UpsertResponse rhsResponse(String userId, String id) {
-        return new UpsertResponse(userId, id, "right");
+    public final static UpsertResponse rhsResponse(String userId, String cmpId) {
+        return new UpsertResponse(userId, cmpId, "right");
     }
 
     private final String userId;
-    private final String id;
+    private final String cmpId;
     private final String side;
 
     private UpsertResponse(String userId, String id, String side) {
         this.userId = userId;
-        this.id = id;
+        this.cmpId = id;
         this.side = side;
     }
 
@@ -41,8 +41,8 @@ public class UpsertResponse {
         return userId;
     }
 
-    public String getId() {
-        return id;
+    public String getCmpId() {
+        return cmpId;
     }
 
     public String getSide() {

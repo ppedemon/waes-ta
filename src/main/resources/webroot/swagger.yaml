@@ -2,8 +2,8 @@ openapi: 3.0.2
 swagger: 2.0
 
 info:
-  title: 'Chirper: A simple Twitter-like API'
-  description: API allowing users to post so-called chirps, which can be liked, replied, or "rechirped".
+  title: 'WAES Technical Assignment'
+  description: WAES Technical Assignment, handled on July 8 2019.
   version: 1.0.0
   contact:
     email: ppedemonte@gmail.com
@@ -12,61 +12,52 @@ info:
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: /api/v1
+  - url: /v1
 
 tags:
-- name: Chirps
-  description: Handle a chirp collection
+- name: Comparisons
+  description: API allowing users to create, update, and evaluate comparisons based on Base64 encoded binary data.
 
 paths:
-  /chirps:
-    # Create a chirp
-    post:
+  /diff/{id}/left:
+    put:
       tags:
-      - Chirps
+      - Comparisons
       security:
       - bearerAuth: []
-      summary: Post a chirp
+      summary: Upsert the left hand side of a comparison. That's is, insert if not existing, update if existing.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Comparison Id
+          schema:
+            type: string
       requestBody:
-        required: false
+        required: true
+        description: Base64 encoded data for the left hand side of the given comparison.
         content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              required:
-              - text
-              properties:
-                text:
-                  type: string
-                  description: Text of chirp to be posted, can't be blank or exceed 256 characters.
-                inReplyTo:
-                  type: string
-                  description: >
-                    Chirp `id`, makes the posted chirp a reply to the chirp with the given `id`.
-                    Mutually exclusive with rechirpOf.
-                rechirpOf:
-                  type: string
-                  description: >
-                    Chirp `id`, makes the posted chirp a rechirp of the chirp with the given `id`.
-                    Mutually exclusive with `inReplyTo`.
+          plain/text:
+            type: string
+            format: byte
       responses:
         201:
-          description: Chirp successfully created
+          description: Comparison side created
           headers:
             Location:
               schema:
                 type: string
               description: URL of posted chirp
-          links:
-            chirpLocation:
-              description: The returned `id` can be used in `GET /chirps/{id}` to get the chirp
-              operationId: getChirp
-              parameters:
-                id: '$response.body#/_id'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Chirp'
+                $ref: '#/components/schemas/UpsertResponse'
+        200:
+          description: Comparison side updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpsertResponse'
         400:
           description: Bad request
           content:
@@ -85,41 +76,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    get:
+
+  /diff/{id}/right:
+    put:
       tags:
-      - Chirps
+      - Comparisons
       security:
       - bearerAuth: []
-      summary: Paginate through all chirps authored by the authenticated user
-      operationId: getAllChirps
+      summary: Upsert the right hand side of a comparison. That's is, insert if not existing, update if existing.
       parameters:
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Maximum number of chirps to retrieve
-        - in: query
-          name: next
+        - in: path
+          name: id
+          required: true
+          description: Comparison Id
           schema:
             type: string
-            required: false
-            description: Token used to get next page of results
+      requestBody:
+        required: true
+        description: Base64 encoded data for the right hand side of the given comparison.
+        content:
+          plain/text:
+            type: string
+            format: byte
       responses:
-        200:
-          description: Chirps found
+        201:
+          description: Comparison side created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of posted chirp
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Page'
-          links:
-            nextChirps:
-              description: The `next` token can be passed to this request to get next page
-              operationId: getAllChirps
-              parameters:
-                next: '$response.body#/next'
+                $ref: '#/components/schemas/UpsertResponse'
+        200:
+          description: Comparison side updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpsertResponse'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         401:
           description: Unauthorized
           content:
@@ -133,36 +135,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /chirps/{id}:
+  /diff/{id}:
     get:
       tags:
-      - Chirps
+      - Comparisons
       security:
       - bearerAuth: []
-      summary: Get a chirp by id
-      operationId: getChirp
+      summary: Compute and/or get comparison results for comparison with the given id
       parameters:
         - in: path
           name: id
           required: true
+          description: Comparison Id
           schema:
-            $ref: '#/components/schemas/ChirpId'
-          description: Chirp id
+            type: string
       responses:
         200:
-          description: Chirp found
+          description: Comparison successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Chirp'
-        401:
-          description: Unauthorized
+                $ref: '#/components/schemas/ComparisonResult'
+        404:
+          description: Comparison not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        404:
-          description: Chirp not found
+        401:
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -176,166 +177,20 @@ paths:
 
     delete:
       tags:
-      - Chirps
+      - Comparisons
       security:
       - bearerAuth: []
-      summary: Delete the chirp with the given `id`, only if the current user has authored it.
+      summary: Delete the comparison with the given id.
       parameters:
         - in: path
           name: id
           required: true
-          schema:
-            $ref: '#/components/schemas/ChirpId'
-          description: Chirp id
-      responses:
-        204:
-          description: Chirp deleted
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        404:
-          description: Chirp not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /chirps/{id}/replies:
-    get:
-      tags:
-      - Chirps
-      security:
-      - bearerAuth: []
-      summary: Paginate through all replies to a given Chirp
-      operationId: getAllReplies
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            $ref: '#/components/schemas/ChirpId'
-          description: Chirp id
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Maximum number of replies to retrieve
-        - in: query
-          name: next
           schema:
             type: string
-            required: false
-            description: Token used to get next page of results
-      responses:
-        200:
-          description: Replies found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Page'
-          links:
-            nextChirps:
-              description: The `next` token can be passed to this request to get next page
-              operationId: getAllReplies
-              parameters:
-                next: '$response.body#/next'
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /chirps/{id}/rechirps:
-    get:
-      tags:
-      - Chirps
-      security:
-      - bearerAuth: []
-      summary: Paginate through all rechirps of a given Chirp
-      operationId: getAllRechirps
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            $ref: '#/components/schemas/ChirpId'
-          description: Chirp id
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          description: Maximum number of rechirps to retrieve
-        - in: query
-          name: next
-          schema:
-            type: string
-            required: false
-            description: Token used to get next page of results
-      responses:
-        200:
-          description: Rechirps found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Page'
-          links:
-            nextChirps:
-              description: The `next` token can be passed to this request to get next page
-              operationId: getAllRechirps
-              parameters:
-                next: '$response.body#/next'
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /chirps/{id}/likes:
-    post:
-      tags:
-      - Chirps
-      security:
-      - bearerAuth: []
-      summary: Like the given chirp.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            $ref: '#/components/schemas/ChirpId'
-          description: Chirp id
+          description: Comparison Id
       responses:
         204:
-          description: Chirp liked
+          description: Comparison deleted
         401:
           description: Unauthorized
           content:
@@ -343,7 +198,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         404:
-          description: Chirp not found
+          description: Comparison not found
           content:
             application/json:
               schema:
@@ -355,35 +210,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /chirps/{id}/stats:
+
+  /diff/{id}/status:
     get:
       tags:
-      - Chirps
+      - Comparisons
       security:
       - bearerAuth: []
-      summary: Get stats likes, replies, and rechirps count for the given chirp.
+      summary: Get status information for the comparison with the given id
       parameters:
         - in: path
           name: id
           required: true
+          description: Comparison Id
           schema:
-            $ref: '#/components/schemas/ChirpId'
-          description: Chirp id
+            type: string
       responses:
         200:
-          description: Stats for given chirp
+          description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Stats'
-        401:
-          description: Unauthorized
+                $ref: '#/components/schemas/ComparisonStatus'
+        404:
+          description: Comparison not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        404:
-          description: Chirp not found
+        401:
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -401,89 +257,92 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
   schemas:
-    Chirp:
+    UpsertResponse:
       type: object
       required:
-      - id
-      - userId
-      - createdAt
-      - text
-      - likes
+        - userId
+        - cmpId
+        - side
       properties:
-        id:
-          $ref: '#/components/schemas/ChirpId'
-          description: Chirp id
         userId:
           type: string
           pattern: '^[0-9a-f\\-]{36}$'
-          description: User id
-        createdAt:
+          description: user Id
+        cmpId:
           type: string
-          format: date-time
-          description: creation date
-        text:
+          description: comparison Id
+        side:
           type: string
-          pattern: '^(?=.*\\S).{1,256}$'
-          description: Chirp text
-        relation:
-          type: object
-          required:
-          - parentId
-          - kind
-          properties:
-            parentId:
-              $ref: '#/components/schemas/ChirpId'
-              description: Id of parent chirp
-            kind:
-              type: string
-              enum:
-              - 'reply'
-              - 'rechirp'
-          description: Optional relation specifying whether this chirp is a reply or rechirp
-        likes:
-          type: integer
-          minimumValue: 0
-          description: Number of likes for this chirp
-    ChirpId:
-      type: string
-      pattern: '^[0-9a-f]{24}$'
-    Page:
+          enum:
+            - 'left'
+            - 'right'
+          description: side upserted
+
+    ComparisonResult:
       type: object
       required:
-      - data
+        - status
       properties:
-        data:
+        status:
+          type: string
+          enum:
+            - 'EQUAL'
+            - 'DIFFERENT_LENGTH'
+            - 'EQUAL_LENGTH'
+          description: comparison status
+        differences:
           type: array
           items:
-            $ref: '#/components/schemas/Chirp'
-          description: At most `limit` chirps
-        next:
-          type: string
-          description: Optional token to be used to get next page. If not present, there are no more chirps to retrieve.
-    Stats:
+            $ref: '#/components/schemas/Span'
+          description: list of difference spans, only present if status is `EQUAL_LENGTH`.
+
+    Span:
       type: object
       required:
-      - id
-      - likes
-      - replies
-      - rechirps
+        - offset
+        - length
       properties:
-        id:
-          $ref: '#/components/schemas/ChirpId'
-          description: Chirp id
-        likes:
+        offset:
           type: integer
-          minimumValue: 0
-          description: Number of likes for the given chirp
-        replies:
+          minimum: 0
+          description: difference span offset
+        length:
           type: integer
-          minimumValue: 0
-          description: Number of times the given chirp was replied
-        rechirps:
+          minimum: 1
+          description: difference span length
+
+    ComparisonStatus:
+      type: object
+      required:
+        - userId
+        - cmpId
+        - version
+        - lhsReady
+        - rhsReady
+      properties:
+        userId:
+          type: string
+          pattern: '^[0-9a-f\\-]{36}$'
+          description: user Id
+        cmpId:
+          type: string
+          description: comparison Id
+        version:
           type: integer
-          minimumValue: 0
-          description: Number of times the given chirp was rechirped
+          minimum: 1
+          description: version number, incremented whenever comparison is updated
+        lhsReady:
+          type: boolean
+          description: whether left hand side of comparison is set
+        rhsReady:
+          type: boolean
+          description: whether right hand side of comparison is set
+        result:
+          $ref: '#/components/schemas/ComparisonResult'
+          description: comparison result, only if available
+
     Error:
       type: object
       required:
