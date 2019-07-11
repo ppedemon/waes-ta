@@ -19,6 +19,7 @@ controller, service, and repository layers. For data persistence I'm using Mongo
   Check the [waes-ta-devops](https://github.com/ppedemon/waes-ta-devops) project for the full details.
 * API secured with bearer JWT authorization. User management and JWT token negotiation
   delegated to [KeyCloak](https://www.keycloak.org/).
+* Extra endpoints `GET /v1/diff/{id}/status` and `DELETE /v1/diff/{id}`.
 * API is fully documented with [Swagger](http://184.172.247.245:30800/swagger).
 
 ## Usage
