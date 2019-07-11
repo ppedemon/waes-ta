@@ -12,10 +12,19 @@ import java.util.Objects;
  * Abstract comparator. Algorithm is here, it's up to subclasses
  * how to interpret the meaning of a base64 encoded string.
  *
+ * @param <T> type to which each character of a base64 encoded string will be mapped to
+ *
  * @author ppedemon
  */
 public abstract class AbstractComparator<T> implements Comparator {
 
+    /**
+     * Define how to interpret a given base64 encoded text. That is, subclasses are responsible
+     * for defining the semantics of a base64 encoded text chunk.
+     *
+     * @param base64Text  base64 encoded text chunk to decode
+     * @return  decoding result, as a list of elements of type {@code T} (one for each character of the input)
+     */
     abstract List<T> decode(String base64Text);
 
     @Override
