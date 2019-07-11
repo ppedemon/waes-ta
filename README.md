@@ -82,7 +82,7 @@ echo $TOKEN
 
 ## Possible Improvements
 
-* Provide endpoint to page through all user's comparisons. This is easy, but I haven't had the time to code it 😟.
+* Provide endpoint to page through all user's comparisons.
 * Add a description to both sides of a comparison, so users can get better insights about comparisons when querying.
 * Mongo limits document size to 16Mb, so using Mongo won't be suitable for large data chunks. In order to avoid
   running into data size issues, this application limits data size to 5Mb. We could circumvent this limitation
