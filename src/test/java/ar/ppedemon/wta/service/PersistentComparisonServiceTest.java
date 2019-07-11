@@ -141,7 +141,6 @@ class PersistentComparisonServiceTest {
                 .assertValue(ResultWrapper::success)
                 .assertValue(wrapper -> wrapper.result().isEqual());
 
-
         verify(comparator, times(1)).compare(any(Comparison.class));
 
         verify(comparisonDao, times(1)).updateResult(

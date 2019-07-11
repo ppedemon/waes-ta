@@ -6,8 +6,7 @@ import ar.ppedemon.wta.model.ComparisonResult;
 import ar.ppedemon.wta.util.Base64Encoder;
 import ar.ppedemon.wta.util.JWTUtil;
 import ar.ppedemon.wta.util.RandomPort;
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
+import ar.ppedemon.wta.util.ResourceReader;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.restassured.RestAssured;
@@ -23,7 +22,6 @@ import io.vertx.reactivex.ext.mongo.MongoClient;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.io.IOException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -40,11 +38,13 @@ class ComparisonIntegrationTest {
 
     private static JWTUtil jwtUtil;
     private static Base64Encoder base64Encoder;
+    private static ResourceReader resourceReader;
 
     @BeforeAll
     static void init(Vertx vertx) {
         jwtUtil = new JWTUtil(vertx, "auth/pubkey", "auth/privkey");
         base64Encoder = new Base64Encoder();
+        resourceReader = new ResourceReader();
     }
 
     @BeforeEach
@@ -140,8 +140,8 @@ class ComparisonIntegrationTest {
     @Test
     @DisplayName("must compute result for valid comparison")
     void compare_whenValidComparison_mustReturnResult(VertxTestContext context) {
-        String left = readResource("payloads/left-payload.txt");
-        String right = readResource("payloads/right-payload.txt");
+        String left = resourceReader.readResource("payloads/left-payload.txt");
+        String right = resourceReader.readResource("payloads/right-payload.txt");
 
         insertSide("2", "left", left);
         insertSide("2", "right", right);
@@ -159,8 +159,8 @@ class ComparisonIntegrationTest {
     @Test
     @DisplayName("comparisons must be idempotent")
     void compare_whenRepeatedComparison_mustReturnSameResult(VertxTestContext context) {
-        String left = readResource("payloads/left-payload.txt");
-        String right = readResource("payloads/right-payload.txt");
+        String left = resourceReader.readResource("payloads/left-payload.txt");
+        String right = resourceReader.readResource("payloads/right-payload.txt");
 
         insertSide("2", "left", left);
         insertSide("2", "right", right);
@@ -185,8 +185,8 @@ class ComparisonIntegrationTest {
     @Test
     @DisplayName("comparison results must be different when comparison change")
     void compare_whenChangingComparison_mustGiveDifferentResults(VertxTestContext context) {
-        String left = readResource("payloads/left-payload.txt");
-        String right = readResource("payloads/right-payload.txt");
+        String left = resourceReader.readResource("payloads/left-payload.txt");
+        String right = resourceReader.readResource("payloads/right-payload.txt");
 
         insertSide("2", "right", right);
         insertSide("2", "left", left);
@@ -239,8 +239,8 @@ class ComparisonIntegrationTest {
     @Test
     @DisplayName("compare must correctly handle equal base64 binary data")
     void compare_whenEqualBinaryData_mustReturnEqualsComparison(VertxTestContext context) {
-        byte[] left = readBinaryResource("payloads/stickroll.gif");
-        byte[] right = readBinaryResource("payloads/stickroll.gif");
+        byte[] left = resourceReader.readBinaryResource("payloads/stickroll.gif");
+        byte[] right = resourceReader.readBinaryResource("payloads/stickroll.gif");
 
         insertSide("1", "left", left);
         insertSide("1", "right", right);
@@ -257,8 +257,8 @@ class ComparisonIntegrationTest {
     @Test
     @DisplayName("compare must correctly handle different base64 binary data")
     void compare_whenDifferentBinaryData_mustReturnNotEqualsComparison(VertxTestContext context) {
-        byte[] left = readBinaryResource("payloads/stickroll.gif");
-        byte[] right = readBinaryResource("payloads/arrow.gif");
+        byte[] left = resourceReader.readBinaryResource("payloads/stickroll.gif");
+        byte[] right = resourceReader.readBinaryResource("payloads/arrow.gif");
 
         insertSide("1", "left", left);
         insertSide("1", "right", right);
@@ -373,22 +373,6 @@ class ComparisonIntegrationTest {
                 .headers("Authorization", jwtUtil.token(USER_ID))
                 .delete(String.format("/diff/%s", id))
                 .thenReturn();
-    }
-
-    private String readResource(String path) {
-        try {
-            return Resources.toString(Resources.getResource(path), Charsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private byte[] readBinaryResource(String path) {
-        try {
-            return Resources.toByteArray(Resources.getResource(path));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private Completable resetDb(Vertx vertx, JsonObject config) {
