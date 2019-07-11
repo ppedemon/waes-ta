@@ -69,7 +69,7 @@ echo $TOKEN
     IDs, it makes sense to [use the `PUT` method](https://stackoverflow.com/questions/630453/put-vs-post-in-rest)
     with upsert semantics for resource creation. This is exactly what I'm doing in my implementation.
 * **Base64 Data must be decoded before comparing:** Due to padding two different data blobs can end up
-    having base64 encoding with equal length. It would be very unnatural for the Rest API to report
+    having base64 encodings with equal length. It would be very unnatural for the Rest API to report
     equal length and a list of differences when the original sides to compare were actually of different
     length. Therefore the compare endpoint decodes base64 data to byte arrays before comparing.
 * **Comparison IDs don't have to be globally unique:** It would be too restrictive to ask users to provide
@@ -81,6 +81,6 @@ echo $TOKEN
 
 * Provide endpoint to page through all user's comparisons. This is easy, but I haven't had the time to code it 😟.
 * Add a description to both sides of a comparison, so users can get better insights about comparisons when querying.
-* Mongo limits document size to 16Mb, so using Mongo for storage might is not suitable large data chunks.
-  In order to avoid running into data size issues, this applications limits data size to 5Mb. We could
-  circumvent this limitation by using another kind of storage, such as GridFS or HDFS.
+* Mongo limits document size to 16Mb, so using Mongo won't be suitable for large data chunks. In order to avoid
+  into data size issues, this applications limits data size to 5Mb. We could circumvent this limitation by using
+  another kind of storage morew suited for big data, such as GridFS or HDFS.
