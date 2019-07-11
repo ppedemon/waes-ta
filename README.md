@@ -24,9 +24,20 @@ controller, service, and repository layers. For data persistence I'm using Mongo
 ## Usage
 
 Testing only require a JDK 1.8 installed. Run tests by executing:
+
 ```bash
 ./gradlew test integrationTest
 ./gradlew jacocoTestReport  # Optional, find report in build/reports/jacoco/test/html/index.html
+```
+
+Running locally requires [docker-compose](https://docs.docker.com/compose/install/) for running Mongo and Keycloack,
+and [jq](https://stedolan.github.io/jq/) for running the script negotiating a JWT token (wait a little bit after
+executing `docker-compose`, since Keycloak takes some time to start up).
+
+```bash
+docker-compose -f dev/docker-compose.yaml up -d  # Startup Keycloak and Mongo
+source dev/mongo-setup.sh                        # Optional, create indexes in local Mongo database
+./gradlew run
 ```
 
 ## Assumptions
