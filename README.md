@@ -23,7 +23,7 @@ controller, service, and repository layers. For data persistence I'm using Mongo
 
 ## Usage
 
-Testing only require a JDK 1.8 installed. Run tests by executing:
+Testing only requires JDK 1.8 installed. Run tests by executing:
 ```bash
 ./gradlew test integrationTest
 ./gradlew jacocoTestReport  # Optional, find report in build/reports/jacoco/test/html/index.html
