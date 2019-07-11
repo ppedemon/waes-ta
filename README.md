@@ -30,7 +30,7 @@ Testing only require a JDK 1.8 installed. Run tests by executing:
 ```
 
 Running locally requires [docker-compose](https://docs.docker.com/compose/install/) for running Mongo and Keycloack,
-and [jq](https://stedolan.github.io/jq/) for running the script negotiating a JWT token. Wait a little bit after
+and [jq](https://stedolan.github.io/jq/) for executing the script negotiating a JWT token. Wait a little bit after
 executing `docker-compose`, since Keycloak takes some time to start up.
 ```bash
 docker-compose -f dev/docker-compose.yaml up -d  # Startup Keycloak and Mongo
@@ -49,7 +49,7 @@ curl -X PUT -H "Authorization:Bearer ${TOKEN}" \
   -d $(echo Left data | base64) http://localhost:8080/v1/diff/1/left
 ```
 
-OR you can hit the [Swagger docs](http://localhost:8080/swagger). Hit the `Authorize` button on the upper right,
+Or you can hit the [Swagger docs](http://localhost:8080/swagger). Hit the `Authorize` button on the upper right,
 paste the value of the `TOKEN` environment variable, and you're ready to go.
 
 Alternatively, go to the live [Swagger docs](http://184.172.247.245:30800/swagger) in IBM Cloud. Get a JWT token by
