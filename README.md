@@ -23,7 +23,11 @@ controller, service, and repository layers. For data persistence I'm using Mongo
 
 ## Usage
 
-Coming soon!
+Testing only require a JDK 1.8 installed. Run tests by executing:
+```bash
+./gradlew test integrationTest
+./gradlew jacocoTestReport  # Optional, find report in build/reports/jacoco/test/html/index.html
+```
 
 ## Assumptions
 
@@ -41,12 +45,12 @@ Coming soon!
 * **Comparison IDs don't have to be globally unique:** It would be too restrictive to ask users to provide
     globally unique comparison IDs. So IDs have to be unique **only** at the user level. Comparisons are
     uniquely identified by a combination of a unique user ID and the user-provided comparison ID. User
-    information (including the user ID) is provided to the API by means of a Bearer JWT token.
+    information (including the user ID) is provided to the API by means of the Bearer JWT token.
 
 ## Possible Improvements
 
 * Provide endpoint to page through all user's comparisons. This is easy, but I haven't had the time to code it 😟.
 * Add a description to both sides of a comparison, so users can get better insights about comparisons when querying.
-* MongoDB limits document size to 16Mb, so using MongoDB for storage might is not suitable large data chunks.
-  In order to avoid running into data size issues, this applications limits data size to 5Mb. We could circumvent
-  this limitation by using another kind of storage, such as GridFS or HDFS.
+* Mongo limits document size to 16Mb, so using Mongo for storage might is not suitable large data chunks.
+  In order to avoid running into data size issues, this applications limits data size to 5Mb. We could
+  circumvent this limitation by using another kind of storage, such as GridFS or HDFS.
