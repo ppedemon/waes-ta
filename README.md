@@ -14,7 +14,7 @@ controller, service, and repository layers. For data persistence I'm using Mongo
 * CI pipeline running tests, static code reports, and building+pushing Docker image to
     [Docker Hub](https://cloud.docker.com/repository/docker/ppedemon/waes-ta).
 * 95% test coverage according to Jacoco. Full details available in [Coveralls](https://coveralls.io/github/ppedemon/waes-ta).
-* "A code quality" according to [Codacy](https://app.codacy.com/project/ppedemon/waes-ta/dashboard?bid=13401365).
+* "A" code quality according to [Codacy](https://app.codacy.com/project/ppedemon/waes-ta/dashboard?bid=13401365).
 * Current implementation hosted in a [Kubernetes cluster](http://184.172.247.245:30800/swagger).
   Check the [waes-ta-devops](https://github.com/ppedemon/waes-ta-devops) project for the full details.
 * API secured with bearer JWT authorization. User management and JWT token negotiation
