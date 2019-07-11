@@ -82,5 +82,5 @@ echo $TOKEN
 * Provide endpoint to page through all user's comparisons. This is easy, but I haven't had the time to code it 😟.
 * Add a description to both sides of a comparison, so users can get better insights about comparisons when querying.
 * Mongo limits document size to 16Mb, so using Mongo won't be suitable for large data chunks. In order to avoid
-  into data size issues, this applications limits data size to 5Mb. We could circumvent this limitation by using
-  another kind of storage morew suited for big data, such as GridFS or HDFS.
+  running into data size issues, this application limits data size to 5Mb. We could circumvent this limitation
+  by using another kind of storage more suited for big data, such as GridFS or HDFS.
