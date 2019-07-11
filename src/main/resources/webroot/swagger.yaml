@@ -59,7 +59,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UpsertResponse'
         400:
-          description: Bad request (no payload or not base64)
+          description: Bad request (no payload, not base64, or exceeding size limit)
           content:
             application/json:
               schema:
@@ -117,7 +117,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UpsertResponse'
         400:
-          description: Bad request (no payload or not base64)
+          description: Bad request (no payload, not base64, or exceeding size limit)
           content:
             application/json:
               schema:

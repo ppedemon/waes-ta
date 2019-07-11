@@ -21,6 +21,7 @@ import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import io.vertx.reactivex.core.RxHelper;
 import io.vertx.reactivex.core.Vertx;
+import joptsimple.internal.Strings;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -174,6 +175,32 @@ class ComparisonVerticleTest {
                 .statusCode(200)
                 .contentType(ContentType.JSON)
                 .body("userId", equalTo(USER_ID), "cmpId", equalTo("1"), "side", equalTo("right"));
+
+        context.completeNow();
+    }
+
+    @Test
+    @DisplayName("must reject long inputs on the left side")
+    void upsert_left_whenLeftInputTooLong_mustReturn400(VertxTestContext context) {
+        int offendingSize = Constants.MAX_SIZE + 1;
+        insertSide("1", "left", Strings.repeat('a', offendingSize)).then()
+                .log().ifValidationFails()
+         .and().assertThat()
+                .statusCode(400)
+                .contentType(ContentType.JSON);
+
+        context.completeNow();
+    }
+
+    @Test
+    @DisplayName("must reject long inputs on the right side")
+    void upsert_left_whenRightInputTooLong_mustReturn400(VertxTestContext context) {
+        int offendingSize = Constants.MAX_SIZE + 1;
+        insertSide("1", "right", Strings.repeat('a', offendingSize)).then()
+                .log().ifValidationFails()
+                .and().assertThat()
+                .statusCode(400)
+                .contentType(ContentType.JSON);
 
         context.completeNow();
     }

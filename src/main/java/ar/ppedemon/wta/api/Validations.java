@@ -12,14 +12,19 @@ import java.util.Objects;
 class Validations {
 
     /**
-     * Check whether the given text is a non null valid base64 string.
+     * Check whether the given payload is a non null valid base64 string short than the given maximum length.
      *
-     * @param text  text to check
+     * @param text     text to check
+     * @param maxSize  maximum payload size in bytes
      * @throws ValidationException if text is null or not a valid base64 string
      */
-    void validBase64Text(String text) {
+    void validBase64Text(String text, int maxSize) {
         if (Objects.isNull(text)) {
             throw new ValidationException("No payload");
+        }
+
+        if (text.length() > maxSize) {
+            throw new ValidationException(String.format("Payload exceeded max size = %d bytes", maxSize));
         }
 
         try {
@@ -32,9 +37,10 @@ class Validations {
     /**
      * Provide a base64 text validator.
      *
+     * @param maxSize  maximum payload size in bytes
      * @return  base64 text validator
      */
-    CustomValidator base64TextValidator() {
-        return new CustomValidator(context -> validBase64Text(context.getBodyAsString("UTF-8")));
+    CustomValidator base64TextValidator(int maxSize) {
+        return new CustomValidator(context -> validBase64Text(context.getBodyAsString("UTF-8"), maxSize));
     }
 }

@@ -66,7 +66,7 @@ public class ComparisonVerticle extends RestApiVerticle {
         Validations validations = new Validations();
 
         HTTPRequestValidationHandler sideValidator = HTTPRequestValidationHandler.create()
-                .addCustomValidatorFunction(validations.base64TextValidator());
+                .addCustomValidatorFunction(validations.base64TextValidator(Constants.MAX_SIZE));
 
         router.put("/v1/diff/:id/left")
                 .handler(BodyHandler.create())
