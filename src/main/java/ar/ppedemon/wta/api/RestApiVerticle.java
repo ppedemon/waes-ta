@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract verticle factoring out common functionality for Chirp rest APIs.
+ * Abstract verticle factoring out common functionality for Rest APIs.
  */
 abstract class RestApiVerticle extends AbstractVerticle {
 

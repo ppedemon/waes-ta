@@ -7,6 +7,10 @@ package ar.ppedemon.wta.model;
  */
 public class UpsertResponse {
 
+    private final String userId;
+    private final String cmpId;
+    private final String side;
+
     /**
      * Build left hand side response.
      * @param userId user Id
@@ -26,10 +30,6 @@ public class UpsertResponse {
     public final static UpsertResponse rhsResponse(String userId, String cmpId) {
         return new UpsertResponse(userId, cmpId, "right");
     }
-
-    private final String userId;
-    private final String cmpId;
-    private final String side;
 
     private UpsertResponse(String userId, String id, String side) {
         this.userId = userId;

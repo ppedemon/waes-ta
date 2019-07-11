@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(VertxExtension.class)
 @DisplayName("Dao-based comparison service")
-class DaoComparisonServiceTest {
+class PersistentComparisonServiceTest {
 
     private static final String CMP_ID = "123";
     private static final String USER_ID = UUID.randomUUID().toString();
@@ -37,14 +37,14 @@ class DaoComparisonServiceTest {
     private Comparator comparator;
 
     private Base64Encoder base64Encoder;
-    private DaoComparisonService comparisonService;
+    private PersistentComparisonService comparisonService;
 
     @BeforeEach
     void init(Vertx vertx) {
         this.base64Encoder = new Base64Encoder();
         this.comparisonDao = mock(ComparisonDao.class);
         this.comparator = mock(Comparator.class);
-        this.comparisonService = new DaoComparisonService(comparisonDao, comparator, vertx);
+        this.comparisonService = new PersistentComparisonService(comparisonDao, comparator, vertx);
     }
 
     @Test

@@ -14,14 +14,14 @@ import java.util.Objects;
 /**
  * Chirp service implementation backed by a {@link ar.ppedemon.wta.data.ComparisonDao}.
  */
-public class DaoComparisonService implements ComparisonService {
+public class PersistentComparisonService implements ComparisonService {
 
     private final ComparisonDao comparisonDao;
     private final Comparator comparator;
     private final Vertx vertx;
 
     @Inject
-    public DaoComparisonService(ComparisonDao comparisonDao, Comparator comparator, Vertx vertx) {
+    public PersistentComparisonService(ComparisonDao comparisonDao, Comparator comparator, Vertx vertx) {
         this.comparisonDao = comparisonDao;
         this.comparator = comparator;
         this.vertx = vertx;
@@ -80,7 +80,8 @@ public class DaoComparisonService implements ComparisonService {
     }
 
     /**
-     * Comparison will take a significant time for large data. So we execute them in a worker pool.
+     * Comparisons might take a significant time for large data.
+     * We execute them in a worker pool, so as to avoid locking Vert.x event loop.
      *
      * @param comparison  comparison to process
      * @return  Computation delivering comparison result when completed

@@ -11,6 +11,9 @@ package ar.ppedemon.wta.service;
  */
 public final class ResultWrapper<T> {
 
+    private final T result;
+    private final String errorMessage;
+
     /**
      * Create an instance for a successful result.
      * @param result  result
@@ -30,9 +33,6 @@ public final class ResultWrapper<T> {
     public static <T> ResultWrapper<T> error(String message) {
         return new ResultWrapper<>(null, message);
     }
-
-    private final T result;
-    private final String errorMessage;
 
     private ResultWrapper(T result, String errorMessage) {
         this.result = result;

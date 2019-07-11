@@ -10,6 +10,13 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ComparisonStatus {
 
+    private final String userId;
+    private final String cmpId;
+    private final long version;
+    private final boolean lhsReady;
+    private final boolean rhsReady;
+    private final ComparisonResult result;
+
     /**
      * Construct a {@link ComparisonStatus} from the given {@link Comparison}.
      *
@@ -25,13 +32,6 @@ public class ComparisonStatus {
                 Objects.nonNull(comparison.getRight()),
                 comparison.getResult());
     }
-
-    private final String userId;
-    private final String cmpId;
-    private final long version;
-    private final boolean lhsReady;
-    private final boolean rhsReady;
-    private final ComparisonResult result;
 
     private ComparisonStatus(
             String userId,

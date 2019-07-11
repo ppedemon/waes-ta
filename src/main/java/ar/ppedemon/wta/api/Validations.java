@@ -7,12 +7,13 @@ import java.util.Base64;
 import java.util.Objects;
 
 /**
- * HTTP requests validations used by the {@link ChirpVerticle} class.
+ * HTTP requests validations used by the {@link ComparisonVerticle} class.
  */
 class Validations {
 
     /**
      * Check whether the given text is a non null valid base64 string.
+     *
      * @param text  text to check
      * @throws ValidationException if text is null or not a valid base64 string
      */
@@ -30,6 +31,7 @@ class Validations {
 
     /**
      * Provide a base64 text validator.
+     *
      * @return  base64 text validator
      */
     CustomValidator base64TextValidator() {

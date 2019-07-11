@@ -5,7 +5,7 @@ import ar.ppedemon.wta.comparator.Comparator;
 import ar.ppedemon.wta.data.ComparisonDao;
 import ar.ppedemon.wta.data.MongoComparisonDao;
 import ar.ppedemon.wta.service.ComparisonService;
-import ar.ppedemon.wta.service.DaoComparisonService;
+import ar.ppedemon.wta.service.PersistentComparisonService;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import io.vertx.core.json.JsonObject;
@@ -19,7 +19,7 @@ public class Binder extends AbstractModule {
 
     @Provides
     public ComparisonService provideComparisonService(ComparisonDao comparisonDao, Comparator comparator, Vertx vertx) {
-        return new DaoComparisonService(comparisonDao, comparator, vertx);
+        return new PersistentComparisonService(comparisonDao, comparator, vertx);
     }
 
     @Provides
