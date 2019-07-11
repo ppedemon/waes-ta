@@ -5,7 +5,7 @@
 ## Overview
 
 The assignment is implemented as a set of asynchronous, stateless HTTP endpoints. I've used
-[Vert.x](https://vertx.io/) and [Rective Java](https://github.com/ReactiveX/RxJava), with
+[Vert.x](https://vertx.io/) and [Reactive Java](https://github.com/ReactiveX/RxJava), with
 a design mirroring a typical Spring solution, in the sense that the code features a
 controller, service, and repository layers. For data persistence I'm using MongoDB.
 
