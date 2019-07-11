@@ -12,7 +12,7 @@ import java.util.Objects;
  * Abstract comparator. Algorithm is here, it's up to subclasses
  * how to interpret the meaning of a base64 encoded string.
  *
- * @param <T> type to which each character of a base64 encoded string will be mapped to
+ * @param <T> interpreted type for each character in base64 contents to compare
  *
  * @author ppedemon
  */
@@ -48,8 +48,9 @@ public abstract class AbstractComparator<T> implements Comparator {
 
     /**
      * Compute list of differences for two different strings of equal length.
-     * @param lhs  lhs string
-     * @param rhs  rhs string
+     *
+     * @param lhs  lhs side of comparison
+     * @param rhs  rhs side of comparison
      * @return list of {@link Span} instances
      */
     private List<Span> differences(List<T> lhs, List<T> rhs) {
