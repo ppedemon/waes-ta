@@ -32,8 +32,9 @@ Testing only requires JDK 1.8 installed. Run tests by executing:
 
 Running locally requires [docker-compose](https://docs.docker.com/compose/install/) for running Mongo and Keycloack,
 and [jq](https://stedolan.github.io/jq/) for executing the script negotiating a JWT token. Wait a little bit after
-executing `docker-compose`, since Keycloak takes some time to start up. Optionally you'll also need a `mongo` client
-to create the indices (only required for running opitonal `dev/mongo-setup.sh` script).
+executing `docker-compose`, since Keycloak takes some time to start up. If you run the `dev/mongo-setup.sh` script
+(optional!), you'll also need a `mongo` client installed.
+
 ```bash
 docker-compose -f dev/docker-compose.yaml up -d  # Startup Keycloak and Mongo
 source dev/mongo-setup.sh                        # Optional, create indexes in local Mongo database
