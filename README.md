@@ -40,12 +40,23 @@ source dev/mongo-setup.sh                        # Optional, create indexes in l
 
 Once the application is running:
 ```bash
-source dev/token.sh  # Create JWT token, store it on TOKEN env var
+source dev/token.sh  # Create JWT token, store it in TOKEN env var. Valid for 1 day.
 ```
 
 Then your are ready to send requests to the server. For example:
 ```bash
-curl -X PUT -H "Authorization:Bearer ${TOKEN}" -d $(echo Left data | base64) http://localhost:8080/v1/diff/1/left
+curl -X PUT -H "Authorization:Bearer ${TOKEN}" \
+  -d $(echo Left data | base64) http://localhost:8080/v1/diff/1/left
+```
+
+OR you can hit the [Swagger docs](http://localhost:8080/swagger). Hit the `Authorize` button on the upper right,
+paste the value of the `TOKEN` environment variable, and you're ready to go.
+
+Alternatively, go to the live [Swagger docs](http://184.172.247.245:30800/swagger) in IBM Cloud. Get a JWT token by
+cloning [waes-ta-devops](https://github.com/ppedemon/waes-ta-devops), and from that project's root folder execute:
+```bash
+source util/token.sh 184.172.247.245:30900
+echo $TOKEN
 ```
 
 ## Assumptions
