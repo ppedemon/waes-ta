@@ -87,3 +87,5 @@ echo $TOKEN
 * Mongo limits document size to 16Mb, so using Mongo won't be suitable for large data chunks. In order to avoid
   running into data size issues, this application limits data size to 5Mb. We could circumvent this limitation
   by using another kind of storage more suited for big data, such as GridFS or HDFS.
+* Performance tests. [JMeter](https://jmeter.apache.org/) would be suitable for this task.
+
