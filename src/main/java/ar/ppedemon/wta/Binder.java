@@ -8,6 +8,7 @@ import ar.ppedemon.wta.service.ComparisonService;
 import ar.ppedemon.wta.service.PersistentComparisonService;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.name.Names;
 import io.vertx.core.json.JsonObject;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.ext.mongo.MongoClient;
@@ -45,5 +46,6 @@ public class Binder extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(Integer.class).annotatedWith(Names.named("maxPayloadSize")).toInstance(5 * (1 << 20));
     }
 }

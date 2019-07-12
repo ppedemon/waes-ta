@@ -3,6 +3,7 @@ package ar.ppedemon.wta.api;
 import ar.ppedemon.wta.model.ComparisonStatus;
 import ar.ppedemon.wta.model.UpsertResponse;
 import ar.ppedemon.wta.service.ComparisonService;
+import com.google.inject.name.Named;
 import io.reactivex.Single;
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
@@ -30,10 +31,12 @@ public class ComparisonVerticle extends RestApiVerticle {
     private static final String DEFAULT_HOST = "0.0.0.0";
 
     private final ComparisonService comparisonService;
+    private final int maxPayloadSize;
 
     @Inject
-    ComparisonVerticle(ComparisonService comparisonService) {
+    ComparisonVerticle(ComparisonService comparisonService, @Named("maxPayloadSize") int maxPayloadSize) {
         this.comparisonService = comparisonService;
+        this.maxPayloadSize = maxPayloadSize;
     }
 
     /**
@@ -66,7 +69,7 @@ public class ComparisonVerticle extends RestApiVerticle {
         Validations validations = new Validations();
 
         HTTPRequestValidationHandler sideValidator = HTTPRequestValidationHandler.create()
-                .addCustomValidatorFunction(validations.base64TextValidator(Constants.MAX_SIZE));
+                .addCustomValidatorFunction(validations.base64TextValidator(maxPayloadSize));
 
         router.put("/v1/diff/:id/left")
                 .handler(BodyHandler.create())

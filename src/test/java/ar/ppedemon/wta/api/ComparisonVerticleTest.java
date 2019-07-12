@@ -9,6 +9,7 @@ import ar.ppedemon.wta.util.Base64Encoder;
 import ar.ppedemon.wta.util.JWTUtil;
 import ar.ppedemon.wta.util.RandomPort;
 import com.google.common.collect.Lists;
+import com.google.inject.Injector;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
@@ -25,9 +26,6 @@ import joptsimple.internal.Strings;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.UUID;
 
@@ -36,20 +34,17 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 
-@ExtendWith({VertxExtension.class, MockitoExtension.class})
+@ExtendWith({VertxExtension.class})
 @DisplayName("Comparison verticle")
 class ComparisonVerticleTest {
 
     private static final String USER_ID = UUID.randomUUID().toString();
+    private static final int MAX_PAYLOAD_SIZE = 5 * (1 << 20);
 
     private static JWTUtil jwtUtil;
     private static Base64Encoder base64Encoder;
 
-    @Mock
     private ComparisonService comparisonService;
-
-    @InjectMocks
-    private ComparisonVerticle comparisonVerticle;
 
     @BeforeAll
     static void init(Vertx vertx) {
@@ -59,6 +54,9 @@ class ComparisonVerticleTest {
 
     @BeforeEach
     void start(Vertx vertx, VertxTestContext context) {
+        this.comparisonService = mock(ComparisonService.class);
+        ComparisonVerticle comparisonVerticle = new ComparisonVerticle(comparisonService, MAX_PAYLOAD_SIZE);
+
         int port = RandomPort.get();
         RestAssured.port = port;
         RestAssured.baseURI = "http://localhost";
@@ -182,7 +180,7 @@ class ComparisonVerticleTest {
     @Test
     @DisplayName("must reject long inputs on the left side")
     void upsert_left_whenLeftInputTooLong_mustReturn400(VertxTestContext context) {
-        int offendingSize = Constants.MAX_SIZE + 1;
+        int offendingSize = MAX_PAYLOAD_SIZE + 1;
         insertSide("1", "left", Strings.repeat('a', offendingSize)).then()
                 .log().ifValidationFails()
          .and().assertThat()
@@ -195,7 +193,7 @@ class ComparisonVerticleTest {
     @Test
     @DisplayName("must reject long inputs on the right side")
     void upsert_left_whenRightInputTooLong_mustReturn400(VertxTestContext context) {
-        int offendingSize = Constants.MAX_SIZE + 1;
+        int offendingSize = MAX_PAYLOAD_SIZE + 1;
         insertSide("1", "right", Strings.repeat('a', offendingSize)).then()
                 .log().ifValidationFails()
                 .and().assertThat()
