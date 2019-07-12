@@ -30,10 +30,10 @@ Testing only requires JDK 1.8 installed. Run tests by executing:
 ./gradlew jacocoTestReport  # Optional, find report in build/reports/jacoco/test/html/index.html
 ```
 
-Running locally requires [docker-compose](https://docs.docker.com/compose/install/) for running Mongo and Keycloack,
-and [jq](https://stedolan.github.io/jq/) for executing the script negotiating a JWT token. Wait a little bit after
-executing `docker-compose`, since Keycloak takes some time to start up. If you run the `dev/mongo-setup.sh` script
-(optional!), you'll also need a `mongo` client installed.
+Running locally requires [Docker](https://docs.docker.com/install/) + [docker-compose](https://docs.docker.com/compose/install/) 
+for running Mongo and Keycloack, and [jq](https://stedolan.github.io/jq/) for executing the script negotiating a JWT token. Wait 
+a little bit after executing `docker-compose`, since Keycloak takes some time to start up. If you run the `dev/mongo-setup.sh` 
+script (optional!), you'll also need a `mongo` client installed.
 
 ```bash
 docker-compose -f dev/docker-compose.yaml up -d  # Startup Keycloak and Mongo
