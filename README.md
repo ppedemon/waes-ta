@@ -55,8 +55,8 @@ curl -X PUT -H "Authorization:Bearer ${TOKEN}" \
 Or you can hit the [Swagger docs](http://localhost:8080/swagger). Hit the `Authorize` button on the upper right,
 paste the value of the `TOKEN` environment variable, and you're ready to go.
 
-Alternatively, go to the live [Swagger docs](http://184.172.247.245:30800/swagger) in IBM Cloud. Get a JWT token by
-cloning [waes-ta-devops](https://github.com/ppedemon/waes-ta-devops), and from that project's root folder execute:
+Alternatively, go to the live [Swagger docs](http://184.172.247.245:30800/swagger). Get a JWT token by cloning
+[waes-ta-devops](https://github.com/ppedemon/waes-ta-devops), and from that project's root folder execute:
 ```bash
 source util/token.sh 184.172.247.245:30900
 echo $TOKEN
