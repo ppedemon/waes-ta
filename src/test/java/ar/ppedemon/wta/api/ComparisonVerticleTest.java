@@ -9,7 +9,6 @@ import ar.ppedemon.wta.util.Base64Encoder;
 import ar.ppedemon.wta.util.JWTUtil;
 import ar.ppedemon.wta.util.RandomPort;
 import com.google.common.collect.Lists;
-import com.google.inject.Injector;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
